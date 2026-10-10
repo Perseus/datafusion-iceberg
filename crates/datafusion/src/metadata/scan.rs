@@ -71,6 +71,10 @@ impl DataSource for IcebergMetadataDataSource {
     ) -> Result<SendableRecordBatchStream> {
         let fut = self.provider.clone().scan();
         let projection = self.projection.clone();
+
+        // TODO: Push these projections down into the scan layer instead of manually iterating over the result set
+        // and applying them.
+        // This will be possible once this issue is addressed in iceberg-rust: https://github.com/apache/iceberg-rust/issues/3391
         let stream =
             futures::stream::once(fut)
                 .try_flatten()
